@@ -20,6 +20,12 @@ MIT
 
 ## Change Log
 
+### 0.1.1 (2020-07-24)
+
+#### Features
+
+* **example-websocket-app:** integration websocket controller booter 
+
 ### 0.1.0 (2020-07-24)
 
 #### Features

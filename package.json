@@ -1,6 +1,6 @@
 {
   "name": "loopback-example-websocket-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "loopback-example-websocket-app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
