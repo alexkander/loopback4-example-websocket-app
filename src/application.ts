@@ -3,20 +3,22 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
-import {RepositoryMixin} from '@loopback/repository';
-import {Request, Response, RestApplication} from '@loopback/rest';
-import {RestExplorerComponent} from '@loopback/rest-explorer';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
+import { RepositoryMixin } from '@loopback/repository';
+import { Request, Response } from '@loopback/rest';
+import { RestExplorerComponent } from '@loopback/rest-explorer';
+import { ServiceMixin } from '@loopback/service-proxy';
 import morgan from 'morgan';
 import path from 'path';
-import {MySequence} from './sequence';
+import { MySequence } from './sequence';
+import { WebsocketApplication } from "./websockets/websocket.application";
+import { ChatControllerWs } from "./controllers.ws";
 
-export {ApplicationConfig};
+export { ApplicationConfig };
 
 export class TodoListApplication extends BootMixin(
-  ServiceMixin(RepositoryMixin(RestApplication)),
+  ServiceMixin(RepositoryMixin(WebsocketApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
@@ -39,6 +41,8 @@ export class TodoListApplication extends BootMixin(
         nested: true,
       },
     };
+
+    this.websocketRoute(ChatControllerWs, /^\/chats\/\d+$/);
 
     this.setupLogging();
   }

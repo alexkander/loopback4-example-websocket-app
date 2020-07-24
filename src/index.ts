@@ -16,16 +16,20 @@ export async function main(options: ApplicationConfig = {}) {
 }
 
 if (require.main === module) {
+  const port = process.env.PORT ?? 3000;
   // Run the application
   const config = {
     rest: {
-      port: +(process.env.PORT ?? 3000),
+      port,
       host: process.env.HOST ?? 'localhost',
       openApiSpec: {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
       },
     },
+    websocket: {
+      port
+    }
   };
   main(config).catch(err => {
     console.error('Cannot start the application.', err);

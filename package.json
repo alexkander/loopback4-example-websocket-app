@@ -45,8 +45,11 @@
     "@loopback/rest": "^5.2.1",
     "@loopback/rest-explorer": "^2.2.7",
     "@loopback/service-proxy": "^2.3.5",
+    "@types/socket.io": "^2.1.10",
+    "@types/socket.io-client": "^1.4.33",
     "loopback-connector-rest": "^3.7.0",
     "morgan": "^1.10.0",
+    "socket.io": "^2.3.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
@@ -59,6 +62,7 @@
     "@types/node": "^10.17.27",
     "eslint": "^7.5.0",
     "lodash": "^4.17.19",
+    "socket.io-client": "^2.3.0",
     "typescript": "~3.9.7"
   },
   "keywords": [
