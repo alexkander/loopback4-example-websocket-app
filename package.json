@@ -1,14 +1,13 @@
 {
-  "name": "@loopback/example-todo",
-  "version": "3.6.2",
-  "description": "Tutorial example on how to build an application with LoopBack 4",
+  "name": "loopback-example-websocket-app",
+  "version": "0.1.0",
+  "description": "loopback-example-websocket-app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">=10.16"
   },
-  "author": "IBM Corp.",
-  "copyright.owner": "IBM Corp.",
+  "author": "arondn2@gmail.com",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -16,7 +15,7 @@
   "scripts": {
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
-    "clean": "lb-clean *example-todo*.tgz dist *.tsbuildinfo package",
+    "clean": "lb-clean *example-websocket-app*.tgz dist *.tsbuildinfo package",
     "lint": "npm run prettier:check && npm run eslint",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
     "prettier:cli": "lb-prettier \"**/*.ts\"",
@@ -35,8 +34,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/strongloop/loopback-next.git",
-    "directory": "examples/todo"
+    "url": "https://github.com/arondn2/loopback4-example-websocket-app.git",
+    "directory": "/"
   },
   "dependencies": {
     "@loopback/boot": "^2.4.0",
@@ -67,12 +66,13 @@
   },
   "keywords": [
     "loopback",
-    "LoopBack",
     "example",
     "tutorial",
     "CRUD",
     "models",
-    "todo"
-  ],
-  "gitHead": "5538896411bb56467ae52670a29d1aec1690be74"
+    "todo",
+    "websocket",
+    "socket",
+    "socket.io"
+  ]
 }
