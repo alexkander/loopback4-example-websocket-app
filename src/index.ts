@@ -3,7 +3,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {ApplicationConfig, TodoListApplication} from './application';
+import { ApplicationConfig, TodoListApplication } from './application';
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new TodoListApplication(options);

@@ -3,6 +3,7 @@ import { HttpServer } from '@loopback/http-server';
 import { RestApplication } from '@loopback/rest';
 import { WebSocketServer } from "./websocket.server";
 import { Constructor } from "@loopback/context";
+import { Namespace } from "socket.io";
 
 export { ApplicationConfig };
 
@@ -16,8 +17,8 @@ export class WebsocketApplication extends RestApplication {
     this.wsServer = new WebSocketServer(this, this.httpServer);
   }
 
-  public websocketRoute(ControllerClass: Constructor<any>, namespace?: string | RegExp) {
-    return this.wsServer.route(ControllerClass, namespace);
+  public websocketRoute(controllerClass: Constructor<any>, namespace?: string | RegExp): Namespace {
+    return this.wsServer.route(controllerClass, namespace) as Namespace;
   }
 
   public async start(): Promise<void> {

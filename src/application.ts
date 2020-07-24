@@ -13,7 +13,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { MySequence } from './sequence';
 import { WebsocketApplication } from "./websockets/websocket.application";
-import { ChatControllerWs } from "./controllers.ws";
+import { WebsocketControllerBooter } from "./websockets/websocket.booter";
 
 export { ApplicationConfig };
 
@@ -40,9 +40,14 @@ export class TodoListApplication extends BootMixin(
         extensions: ['.controller.js'],
         nested: true,
       },
+      websocketControllers: {
+        dirs: ['controllers'],
+        extensions: ['.controller.ws.js'],
+        nested: true,
+      },
     };
 
-    this.websocketRoute(ChatControllerWs, /^\/chats\/\d+$/);
+    this.booters(WebsocketControllerBooter);
 
     this.setupLogging();
   }
