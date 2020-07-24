@@ -24,4 +24,4 @@ MIT
 
 #### Features
 
-* **example-getting-started:** integration with websocket example [https://github.com/raymondfeng/loopback4-example-websocket](https://github.com/raymondfeng/loopback4-example-websocket) 
+* **example-websocket-app:** integration with websocket example [https://github.com/raymondfeng/loopback4-example-websocket](https://github.com/raymondfeng/loopback4-example-websocket) 
