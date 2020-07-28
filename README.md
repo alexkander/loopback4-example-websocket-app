@@ -14,6 +14,10 @@ npm start
 Open your browser to http://localhost:3000
 ```
 
+## Routes examples
+* /chat/{id:number} -> ChatControllerWs (socket.io connections)
+* /todo -> TodoController (HTTP Requests)
+
 ## License
 
 MIT
