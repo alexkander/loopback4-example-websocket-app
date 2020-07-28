@@ -4,7 +4,7 @@ import {ws} from '../websockets/decorators/websocket.decorator';
 /**
  * A demo controller for websocket
  */
-@ws(/^\/chats\/\d+$/)
+@ws({ name: 'chatNsp', namespace: /^\/chats\/\d+$/  })
 export class ChatControllerWs {
   constructor(
     @ws.socket() // Equivalent to `@inject('ws.socket')`
@@ -19,6 +19,8 @@ export class ChatControllerWs {
   connect(socket: Socket) {
     console.log('Client connected: %s', this.socket.id);
     socket.join('room 1');
+    // Room notification of request /todos/room/example/emit (TodoController)
+    socket.join('some room');
   }
 
   /**

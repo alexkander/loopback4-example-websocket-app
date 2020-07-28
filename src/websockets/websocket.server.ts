@@ -2,7 +2,7 @@ import { Constructor, Context } from '@loopback/context';
 import { HttpServer } from '@loopback/http-server';
 import { Server, ServerOptions, Socket } from 'socket.io';
 import { WebSocketControllerFactory } from './websocket-controller-factory';
-import { getWebSocketMetadata } from "./decorators/websocket.decorator";
+import { getWebSocketMetadata, WebSocketMetadata } from "./decorators/websocket.decorator";
 import SocketIOServer = require("socket.io");
 
 const debug = require('debug')('loopback:websocket');
@@ -20,12 +20,13 @@ export class WebSocketServer extends Context {
   private io: Server;
 
   constructor(
-    ctx: Context,
+    public ctx: Context,
     public readonly httpServer: HttpServer,
     private options: ServerOptions = {},
   ) {
     super(ctx);
     this.io = SocketIOServer(options);
+    ctx.bind('ws.server').to(this.io);
   }
 
   /**
@@ -39,14 +40,20 @@ export class WebSocketServer extends Context {
   /**
    * Register a websocket controller
    * @param ControllerClass
-   * @param namespace
+   * @param meta
    */
-  route(ControllerClass: Constructor<any>, namespace?: string | RegExp) {
-    if (namespace == null) {
-      const meta = getWebSocketMetadata(ControllerClass);
-      namespace = meta && meta.namespace;
+  route(ControllerClass: Constructor<any>, meta?: WebSocketMetadata | string | RegExp) {
+    if(meta instanceof RegExp || typeof meta === 'string'){
+      meta = { namespace: meta } as WebSocketMetadata;
     }
-    const nsp = namespace ? this.io.of(namespace) : this.io;
+    if (meta == null) {
+      meta = getWebSocketMetadata(ControllerClass) as WebSocketMetadata;
+    }
+    const nsp = (meta && meta.namespace) ? this.io.of(meta.namespace) : this.io;
+    if (meta && meta.name) {
+      this.ctx.bind(`ws.namespace.${meta.name}`).to(nsp);
+    }
+
     /* eslint-disable @typescript-eslint/no-misused-promises */
     nsp.on('connection', async socket => {
       console.log('connection', 'connection');

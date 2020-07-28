@@ -8,6 +8,7 @@ import {
 } from '@loopback/context';
 
 export interface WebSocketMetadata {
+  name?: string,
   namespace?: string | RegExp;
 }
 
@@ -40,6 +41,14 @@ export function getWebSocketMetadata(controllerClass: Constructor<unknown>) {
 export namespace ws {
   export function socket() {
     return inject('ws.socket');
+  }
+
+  export function server() {
+    return inject('ws.server');
+  }
+
+  export function namespace(name: string) {
+    return inject(`ws.namespace.${name}`);
   }
 
   /**

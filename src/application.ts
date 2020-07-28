@@ -31,6 +31,8 @@ export class TodoListApplication extends BootMixin(
 
     this.component(RestExplorerComponent);
 
+    this.booters(WebsocketControllerBooter);
+
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
@@ -46,8 +48,6 @@ export class TodoListApplication extends BootMixin(
         nested: true,
       },
     };
-
-    this.booters(WebsocketControllerBooter);
 
     this.setupLogging();
   }

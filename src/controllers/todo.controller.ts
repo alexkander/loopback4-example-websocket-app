@@ -3,34 +3,27 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {inject} from '@loopback/core';
-import {Filter, repository} from '@loopback/repository';
-import {
-  del,
-  get,
-  getModelSchemaRef,
-  HttpErrors,
-  param,
-  patch,
-  post,
-  put,
-  requestBody,
-} from '@loopback/rest';
-import {Todo} from '../models';
-import {TodoRepository} from '../repositories';
-import {Geocoder} from '../services';
+import { inject } from '@loopback/core';
+import { Filter, repository } from '@loopback/repository';
+import { Server } from 'socket.io';
+import { del, get, getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody, } from '@loopback/rest';
+import { Todo } from '../models';
+import { TodoRepository } from '../repositories';
+import { Geocoder } from '../services';
+import { ws } from "../websockets/decorators/websocket.decorator";
 
 export class TodoController {
   constructor(
     @repository(TodoRepository) protected todoRepository: TodoRepository,
     @inject('services.Geocoder') protected geoService: Geocoder,
-  ) {}
+  ) {
+  }
 
   @post('/todos', {
     responses: {
       '200': {
         description: 'Todo model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Todo)}},
+        content: { 'application/json': { schema: getModelSchemaRef(Todo) } },
       },
     },
   })
@@ -38,11 +31,11 @@ export class TodoController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Todo, {title: 'NewTodo', exclude: ['id']}),
+          schema: getModelSchemaRef(Todo, { title: 'NewTodo', exclude: ['id'] }),
         },
       },
     })
-    todo: Omit<Todo, 'id'>,
+      todo: Omit<Todo, 'id'>,
   ): Promise<Todo> {
     if (todo.remindAtAddress) {
       const geo = await this.geoService.geocode(todo.remindAtAddress);
@@ -65,7 +58,7 @@ export class TodoController {
     responses: {
       '200': {
         description: 'Todo model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Todo)}},
+        content: { 'application/json': { schema: getModelSchemaRef(Todo) } },
       },
     },
   })
@@ -82,7 +75,7 @@ export class TodoController {
         description: 'Array of Todo model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Todo)},
+            schema: { type: 'array', items: getModelSchemaRef(Todo) },
           },
         },
       },
@@ -90,7 +83,7 @@ export class TodoController {
   })
   async findTodos(
     @param.filter(Todo)
-    filter?: Filter<Todo>,
+      filter?: Filter<Todo>,
   ): Promise<Todo[]> {
     return this.todoRepository.find(filter);
   }
@@ -121,11 +114,11 @@ export class TodoController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Todo, {partial: true}),
+          schema: getModelSchemaRef(Todo, { partial: true }),
         },
       },
     })
-    todo: Partial<Todo>,
+      todo: Partial<Todo>,
   ): Promise<void> {
     await this.todoRepository.updateById(id, todo);
   }
@@ -137,7 +130,18 @@ export class TodoController {
       },
     },
   })
-  async deleteTodo(@param.path.number('id') id: number): Promise<void> {
+  async deleteTodo(
+    @param.path.number('id') id: number
+  ): Promise<void> {
     await this.todoRepository.deleteById(id);
+  }
+
+  @post('/todos/room/example/emit')
+  async exampleRoomEmmit(
+    @ws.namespace('chatNsp') nsp: Server
+  ): Promise<any> {
+    nsp.to('some room').emit('some room event', `time: ${new Date().getTime()}`);
+    console.log('exampleRoomEmmit');
+    return 'room event emitted';
   }
 }
