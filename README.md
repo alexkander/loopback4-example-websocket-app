@@ -28,7 +28,7 @@ MIT
 
 #### Features
 
-* WebSocketMetadata has attribute name
+* WebSocketMetadata attribute name added
 * bind of io instance and namespace to inject in other controllers.
 
 ### 0.1.1 (2020-07-24)
