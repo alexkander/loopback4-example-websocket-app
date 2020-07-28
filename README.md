@@ -28,10 +28,17 @@ MIT
 
 #### Features
 
-* **example-websocket-app:** integration websocket controller booter 
+* WebSocketMetadata has attribute name
+* bind of io instance and namespace to inject in other controllers.
+
+### 0.1.1 (2020-07-24)
+
+#### Features
+
+* integration websocket controller booter 
 
 ### 0.1.0 (2020-07-24)
 
 #### Features
 
-* **example-websocket-app:** integration with websocket example [https://github.com/raymondfeng/loopback4-example-websocket](https://github.com/raymondfeng/loopback4-example-websocket) 
+* integration with websocket example [https://github.com/raymondfeng/loopback4-example-websocket](https://github.com/raymondfeng/loopback4-example-websocket) 
