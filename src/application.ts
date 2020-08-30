@@ -1,76 +1,54 @@
-// Copyright IBM Corp. 2018,2020. All Rights Reserved.
-// Node module: @loopback/example-todo
-// This file is licensed under the MIT License.
-// License text available at https://opensource.org/licenses/MIT
+import {Application, ApplicationConfig} from '@loopback/core';
+import {HttpServer} from '@loopback/http-server';
+import * as express from 'express';
+import * as path from 'path';
+import {WebSocketController} from './controllers';
+import {WebSocketServer} from './websocket.server';
 
-import { BootMixin } from '@loopback/boot';
-import { ApplicationConfig } from '@loopback/core';
-import { RepositoryMixin } from '@loopback/repository';
-import { Request, Response } from '@loopback/rest';
-import { RestExplorerComponent } from '@loopback/rest-explorer';
-import { ServiceMixin } from '@loopback/service-proxy';
-import morgan from 'morgan';
-import path from 'path';
-import { MySequence } from './sequence';
-import { WebsocketApplication } from "./websockets/websocket.application";
-import { WebsocketControllerBooter } from "./websockets/websocket.booter";
+// tslint:disable:no-any
 
-export { ApplicationConfig };
+export class WebSocketDemoApplication extends Application {
+  readonly httpServer: HttpServer;
+  readonly wsServer: WebSocketServer;
 
-export class TodoListApplication extends BootMixin(
-  ServiceMixin(RepositoryMixin(WebsocketApplication)),
-) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    // Set up the custom sequence
-    this.sequence(MySequence);
+    /**
+     * Create an Express app to serve the home page
+     */
+    const expressApp = express();
+    const root = path.resolve(__dirname, '../../public');
+    expressApp.use('/', express.static(root));
 
-    // Set up default home page
-    this.static('/', path.join(__dirname, '../public'));
+    // Create an http server backed by the Express app
+    this.httpServer = new HttpServer(expressApp, options.websocket);
 
-    this.component(RestExplorerComponent);
-
-    this.booters(WebsocketControllerBooter);
-
-    this.projectRoot = __dirname;
-    // Customize @loopback/boot Booter Conventions here
-    this.bootOptions = {
-      controllers: {
-        // Customize ControllerBooter Conventions here
-        dirs: ['controllers'],
-        extensions: ['.controller.js'],
-        nested: true,
-      },
-      websocketControllers: {
-        dirs: ['controllers'],
-        extensions: ['.controller.ws.js'],
-        nested: true,
-      },
-    };
-
-    this.setupLogging();
+    // Create ws server from the http server
+    const wsServer = new WebSocketServer(this.httpServer);
+    this.bind('servers.websocket.server1').to(wsServer);
+    wsServer.use((socket, next) => {
+      console.log('Global middleware - socket:', socket.id);
+      next();
+    });
+    // Add a route
+    const ns = wsServer.route(WebSocketController, /^\/chats\/\d+$/);
+    ns.use((socket, next) => {
+      console.log(
+        'Middleware for namespace %s - socket: %s',
+        socket.nsp.name,
+        socket.id,
+      );
+      next();
+    });
+    this.wsServer = wsServer;
   }
 
-  private setupLogging() {
-    // Register `morgan` express middleware
-    // Create a middleware factory wrapper for `morgan(format, options)`
-    const morganFactory = (config?: morgan.Options<Request, Response>) => {
-      this.debug('Morgan configuration', config);
-      return morgan('combined', config);
-    };
+  start() {
+    return this.wsServer.start();
+  }
 
-    // Print out logs using `debug`
-    const defaultConfig: morgan.Options<Request, Response> = {
-      stream: {
-        write: str => {
-          this._debug(str);
-        },
-      },
-    };
-    this.expressMiddleware(morganFactory, defaultConfig, {
-      injectConfiguration: 'watch',
-      key: 'middleware.morgan',
-    });
+  stop() {
+    return this.wsServer.stop();
   }
 }
