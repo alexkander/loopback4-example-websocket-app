@@ -48,7 +48,7 @@
     "@types/socket.io-client": "^1.4.33",
     "loopback-connector-rest": "^3.7.0",
     "morgan": "^1.10.0",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
