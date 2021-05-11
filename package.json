@@ -60,7 +60,7 @@
     "@types/morgan": "^1.9.1",
     "@types/node": "^10.17.27",
     "eslint": "^7.5.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "socket.io-client": "^2.3.0",
     "typescript": "~3.9.7"
   },
