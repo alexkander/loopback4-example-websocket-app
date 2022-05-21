@@ -1,9 +1,9 @@
 import { Constructor, Context } from '@loopback/context';
-import { HttpServer } from '@loopback/http-server';
 import { Server, ServerOptions, Socket } from 'socket.io';
 import { WebSocketControllerFactory } from './websocket-controller-factory';
 import { getWebSocketMetadata, WebSocketMetadata } from "./decorators/websocket.decorator";
-import SocketIOServer = require("socket.io");
+import http from 'http';
+import https from 'https';
 
 const debug = require('debug')('loopback:websocket');
 
@@ -21,11 +21,10 @@ export class WebSocketServer extends Context {
 
   constructor(
     public ctx: Context,
-    public readonly httpServer: HttpServer,
-    private options: ServerOptions = {},
+    private options?: ServerOptions,
   ) {
     super(ctx);
-    this.io = SocketIOServer(options);
+    this.io = new Server(options);
     ctx.bind('ws.server').to(this.io);
   }
 
@@ -42,15 +41,15 @@ export class WebSocketServer extends Context {
    * @param ControllerClass
    * @param meta
    */
-  route(ControllerClass: Constructor<any>, meta?: WebSocketMetadata | string | RegExp) {
+  route(controllerClass: Constructor<{ [method: string]: Function }>, meta?: WebSocketMetadata | string | RegExp) {
     if(meta instanceof RegExp || typeof meta === 'string'){
       meta = { namespace: meta } as WebSocketMetadata;
     }
     if (meta == null) {
-      meta = getWebSocketMetadata(ControllerClass) as WebSocketMetadata;
+      meta = getWebSocketMetadata(controllerClass) as WebSocketMetadata;
     }
-    const nsp = (meta && meta.namespace) ? this.io.of(meta.namespace) : this.io;
-    if (meta && meta.name) {
+    const nsp = meta?.namespace ? this.io.of(meta.namespace) : this.io;
+    if (meta?.name) {
       this.ctx.bind(`ws.namespace.${meta.name}`).to(nsp);
     }
 
@@ -67,7 +66,7 @@ export class WebSocketServer extends Context {
       // Bind websocket
       reqCtx.bind('ws.socket').to(socket);
       // Instantiate the controller instance
-      await new WebSocketControllerFactory(reqCtx, ControllerClass).create(
+      await new WebSocketControllerFactory(reqCtx, controllerClass).create(
         socket,
       );
     });
@@ -77,11 +76,8 @@ export class WebSocketServer extends Context {
   /**
    * Start the websocket server
    */
-  async start() {
-    await this.httpServer.start();
-    // FIXME: Access HttpServer.server
-    const server = (this.httpServer as any).server;
-    this.io.attach(server, this.options);
+  async start(httpServer: http.Server | https.Server) {
+    this.io.attach(httpServer, this.options);
   }
 
   /**
@@ -94,6 +90,5 @@ export class WebSocketServer extends Context {
       });
     });
     await close;
-    await this.httpServer.stop();
   }
 }
