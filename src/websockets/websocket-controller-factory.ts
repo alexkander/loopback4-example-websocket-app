@@ -1,4 +1,4 @@
-import { BindingScope, Constructor, Context, invokeMethod, MetadataInspector, } from '@loopback/context';
+import { Constructor, Context, invokeMethod, MetadataInspector, } from '@loopback/context';
 import { Socket } from 'socket.io';
 
 /* eslint-disable @typescript-eslint/no-misused-promises */
@@ -12,8 +12,7 @@ export class WebSocketControllerFactory {
     this.ctx
       .bind('ws.controller')
       .toClass(this.controllerClass)
-      .tag('websocket')
-      .inScope(BindingScope.CONTEXT);
+      .tag('websocket');
   }
 
   async create(socket: Socket) {
@@ -30,7 +29,7 @@ export class WebSocketControllerFactory {
       MetadataInspector.getAllMethodMetadata(
         'websocket:connect',
         this.controllerClass.prototype,
-      ) || {};
+      ) ?? {};
     for (const m in connectMethods) {
       await invokeMethod(this.controller, m, this.ctx, [socket]);
     }
@@ -43,13 +42,13 @@ export class WebSocketControllerFactory {
       MetadataInspector.getAllMethodMetadata<(string | RegExp)[]>(
         'websocket:subscribe',
         this.controllerClass.prototype,
-      ) || {};
+      ) ?? {};
     for (const m in subscribeMethods) {
       for (const t of subscribeMethods[m]) {
         const regexps: RegExp[] = [];
         if (typeof t === 'string') {
           socket.on(t, async (...args: unknown[]) => {
-            let done: Function = (result: any) => null;
+            let done: Function = () => null;
             if (typeof args[args.length - 1] === 'function') {
               done = args.pop() as Function;
             }

@@ -16,11 +16,11 @@ export class ChatControllerWs {
    * @param socket
    */
   @ws.connect()
-  connect(socket: Socket) {
+  async connect(socket: Socket) {
     console.log('Client connected: %s', this.socket.id);
-    socket.join('room 1');
+    await socket.join('room 1');
     // Room notification of request /todos/room/example/emit (TodoController)
-    socket.join('some room');
+    await socket.join('some room');
   }
 
   /**
